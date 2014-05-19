@@ -79,14 +79,12 @@ class rc_factory(object):
                 else:
                     self._is_string = is_string
 
-            try:
-                # Django version is older than 1.5
-                content = property(HttpResponse._get_content, _set_content)
-            except:
-                # Django version 1.5
+            if django.VERSION >= (1, 5):
                 @HttpResponse.content.setter
                 def content(self, content):
-                    self._set_content(content)   
+                    self._set_content(content)
+            else:
+                content = property(HttpResponse._get_content, _set_content)
 
         return HttpResponseWrapper(r, content_type='text/plain', status=c)
     
