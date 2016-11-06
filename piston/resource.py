@@ -135,7 +135,13 @@ class Resource(object):
         NB: Sends a `Vary` header so we don't cache requests
         that are different (OAuth stuff in `Authorization` header.)
         """
+
+        # This line fixes a bug, where no post parameter passed
+        print request, request.POST
+
         rm = request.method.upper()
+
+        print rm
 
         # Django's internal mechanism doesn't pick up
         # PUT request, so we trick it a little here.
@@ -154,12 +160,15 @@ class Resource(object):
             try:
                 translate_mime(request)
             except MimerDataException:
+                #print "translate_mime failed"
                 return rc.BAD_REQUEST
             if not hasattr(request, 'data'):
                 if rm == 'POST':
                     request.data = request.POST
                 else:
                     request.data = request.PUT
+
+
 
         if not rm in handler.allowed_methods:
             return HttpResponseNotAllowed(handler.allowed_methods)
@@ -239,14 +248,19 @@ class Resource(object):
 
     @staticmethod
     def _use_emitter(result):
-        """True iff result is a HttpResponse and contains non-string content."""
+        #print "[PISTON] _use_emitter", result
+        """True if result is a HttpResponse and contains non-string content."""
         if not isinstance(result, HttpResponse):
+            #print "no HttpResponse -> False"
             return False
         elif django.VERSION >= (1, 4) and django.VERSION < (1, 8):
+            #print "Django Version < 1.8 ->", result._base_content_is_iter
             return result._base_content_is_iter
         elif django.VERSION >= (1, 8):
-            return False
+            #print "Django Version > 1.8 -> False"
+            return True
         else:
+            #print "else -> not is_string", not result._is_string
             return not result._is_string
 
     @staticmethod
