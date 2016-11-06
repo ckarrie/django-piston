@@ -32,6 +32,10 @@ class Nonce(models.Model):
     def __unicode__(self):
         return u"Nonce %s for %s" % (self.key, self.consumer_key)
 
+    class Meta:
+        verbose_name = 'Piston Nonce'
+        verbose_name_plural = 'Piston Nonces'
+
 
 class Consumer(models.Model):
     name = models.CharField(max_length=255)
@@ -68,6 +72,10 @@ class Consumer(models.Model):
         self.key = key
         self.secret = secret
         self.save()
+
+    class Meta:
+        verbose_name = 'Piston Consumer'
+        verbose_name_plural = 'Piston Consumers'
 
 
 class Token(models.Model):
@@ -139,6 +147,10 @@ class Token(models.Model):
             self.callback = callback
             self.callback_confirmed = True
             self.save()
+
+    class Meta:
+        verbose_name = 'Piston Token'
+        verbose_name_plural = 'Piston Tokens'
 
 
 # Attach our signals
