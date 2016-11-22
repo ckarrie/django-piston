@@ -87,7 +87,7 @@ class Token(models.Model):
     secret = models.CharField(max_length=SECRET_SIZE)
     verifier = models.CharField(max_length=VERIFIER_SIZE)
     token_type = models.IntegerField(choices=TOKEN_TYPES)
-    timestamp = models.IntegerField(default=long(time.time()))
+    timestamp = models.IntegerField(default=1)
     is_approved = models.BooleanField(default=False)
     
     user = models.ForeignKey(User, null=True, blank=True, related_name='tokens')
@@ -115,6 +115,11 @@ class Token(models.Model):
             del token_dict['oauth_token_secret']
 
         return urllib.urlencode(token_dict)
+
+    def save(self, *args, **kwargs):
+        if self.timestamp == 1:
+            self.timestamp = long(time.time())
+        super(Token, self).save(*args, **kwargs)
 
     def generate_random_codes(self):
         key = User.objects.make_random_password(length=KEY_SIZE)

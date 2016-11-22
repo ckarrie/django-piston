@@ -137,11 +137,8 @@ class Resource(object):
         """
 
         # This line fixes a bug, where no post parameter passed
-        print request, request.POST
 
         rm = request.method.upper()
-
-        print rm
 
         # Django's internal mechanism doesn't pick up
         # PUT request, so we trick it a little here.
@@ -167,8 +164,6 @@ class Resource(object):
                     request.data = request.POST
                 else:
                     request.data = request.PUT
-
-
 
         if not rm in handler.allowed_methods:
             return HttpResponseNotAllowed(handler.allowed_methods)
