@@ -136,7 +136,11 @@ class Resource(object):
         that are different (OAuth stuff in `Authorization` header.)
         """
 
-        # This line fixes a bug, where no post parameter passed
+        # This lines fixes a bug, where no post parameter passed
+        if hasattr(request, 'POST'):
+            request.POST = request.POST
+        if hasattr(request, 'PUT'):
+            request.PUT = request.PUT
 
         rm = request.method.upper()
 
@@ -159,11 +163,10 @@ class Resource(object):
             except MimerDataException:
                 #print "translate_mime failed"
                 return rc.BAD_REQUEST
-            if not hasattr(request, 'data'):
-                if rm == 'POST':
-                    request.data = request.POST
-                else:
-                    request.data = request.PUT
+            if rm == 'POST':
+                request.data = request.POST
+            elif rm == 'PUT':
+                request.data = request.PUT
 
         if not rm in handler.allowed_methods:
             return HttpResponseNotAllowed(handler.allowed_methods)
